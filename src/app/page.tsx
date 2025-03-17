@@ -1,11 +1,11 @@
 import React from 'react'
-import Student from './componets/Student'
-import Landing from './componets/Landing'
+import Landing from './components/Landing'
+import Student from './components/Student'
 
 function page() {
   return (
-  //  <Landing />
-    <Student />
+   <Landing />
+    // <Student />
   )
 }
 

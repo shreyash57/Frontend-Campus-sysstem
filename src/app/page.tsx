@@ -9,7 +9,7 @@ import AdminDashboard from "./components/AdminDashboard"
 import SideBar from "./components/SideBar";
 
 function page() {
-  return <SideBar/>;
+  return <AdminDashboard/>;
 }
 
 export default page;

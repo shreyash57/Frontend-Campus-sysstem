@@ -1,314 +1,232 @@
 // The exported code uses Tailwind CSS. Install Tailwind CSS in your dev environment to ensure all styles work.
 "use client"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faBell, faUsers, faCheckCircle, faDollarSign, faBuilding, faChartLine, faUserGraduate, faChartPie, faFileAlt } from "@fortawesome/free-solid-svg-icons";
 import React, { useState } from 'react';
-import * as echarts from 'echarts';
-import { useEffect } from 'react';
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Avatar } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import * as echarts from 'echarts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const App: React.FC = () => {
-const [activeTab, setActiveTab] = useState('overview');
-useEffect(() => {
-// Branch-wise chart
-const branchChart = echarts.init(document.getElementById('branch-chart'));
+const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+// Initialize charts after component mounts
+React.useEffect(() => {
+// Student Status chart
+const branchChart = echarts.init(document.getElementById('branchChart'));
 const branchOption = {
 animation: false,
-tooltip: {
-trigger: 'axis'
-},
+title: { text: 'Student Placement Status', left: 'center' },
+tooltip: { trigger: 'item' },
 legend: {
-data: ['Interviewed', 'Selected'],
-top: 10
+orient: 'vertical',
+left: 'left',
 },
-grid: {
-left: '3%',
-right: '4%',
-bottom: '3%',
-containLabel: true
-},
-xAxis: {
-type: 'category',
-data: ['Software', 'Data Science', 'Product', 'DevOps', 'Design']
-},
-yAxis: {
-type: 'value'
-},
-series: [
-{
-name: 'Interviewed',
-type: 'bar',
-data: [120, 98, 85, 70, 65],
+series: [{
+name: 'Placement Status',
+type: 'pie',
+radius: '70%',
+data: [
+{ value: 892, name: 'Placed Students', itemStyle: { color: '#4F46E5' } },
+{ value: 356, name: 'Unplaced Students', itemStyle: { color: '#94A3B8' } }
+],
+emphasis: {
 itemStyle: {
-color: '#60A5FA'
-}
-},
-{
-name: 'Selected',
-type: 'bar',
-data: [95, 75, 60, 45, 40],
-itemStyle: {
-color: '#34D399'
+shadowBlur: 10,
+shadowOffsetX: 0,
+shadowColor: 'rgba(0, 0, 0, 0.5)'
 }
 }
-]
+}]
 };
 branchChart.setOption(branchOption);
-// Hiring trend chart
-const trendChart = echarts.init(document.getElementById('trend-chart'));
-const trendOption = {
+// Salary trends chart
+const salaryChart = echarts.init(document.getElementById('salaryChart'));
+const salaryOption = {
 animation: false,
-tooltip: {
-trigger: 'axis'
-},
-grid: {
-left: '3%',
-right: '4%',
-bottom: '3%',
-containLabel: true
-},
+title: { text: 'Salary Trends (LPA)', left: 'center' },
+tooltip: { trigger: 'axis' },
 xAxis: {
 type: 'category',
 data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
 },
-yAxis: {
-type: 'value',
-name: 'Hiring Count'
-},
-series: [
-{
-data: [25, 35, 45, 42, 48, 52],
+yAxis: { type: 'value' },
+series: [{
+data: [12, 14, 15, 16, 18, 20],
 type: 'line',
 smooth: true,
-itemStyle: {
-color: '#8B5CF6'
-}
-}
+itemStyle: { color: '#64748B' }
+}]
+};
+salaryChart.setOption(salaryOption);
+// Company participation chart
+const companyChart = echarts.init(document.getElementById('companyChart'));
+const companyOption = {
+animation: false,
+title: { text: 'Company Distribution', left: 'center' },
+tooltip: { trigger: 'item' },
+series: [{
+type: 'pie',
+radius: ['40%', '70%'],
+data: [
+{ value: 35, name: 'Tech', itemStyle: { color: '#475569' } },
+{ value: 25, name: 'Finance', itemStyle: { color: '#64748B' } },
+{ value: 20, name: 'Consulting', itemStyle: { color: '#94A3B8' } },
+{ value: 20, name: 'Others', itemStyle: { color: '#CBD5E1' } }
 ]
+}]
 };
-trendChart.setOption(trendOption);
-return () => {
-branchChart.dispose();
-trendChart.dispose();
-};
+companyChart.setOption(companyOption);
 }, []);
-const companyData = [
-{
-name: 'Microsoft Corporation',
-logo: 'https://public.readdy.ai/ai/img_res/65befef3966527530d414cda529abb19.jpg',
-status: 'Active',
-positions: 12,
-hired: 28,
-location: 'Seattle, USA'
-},
-{
-name: 'Amazon Web Services',
-logo: 'https://public.readdy.ai/ai/img_res/b843d9bc6ffd6ebe2bc5eb1a0a7f8040.jpg',
-status: 'Active',
-positions: 8,
-hired: 15,
-location: 'New York, USA'
-},
-{
-name: 'Google Cloud',
-logo: 'https://public.readdy.ai/ai/img_res/6e3c1865ed957bad8280900be6ec32bc.jpg',
-status: 'Active',
-positions: 6,
-hired: 12,
-location: 'Mountain View, USA'
-}
-];
 return (
 <div className="min-h-screen bg-gray-50">
-{/* Top Navigation */}
-<header className="bg-white border-b border-gray-200">
-<div className="flex items-center justify-between px-6 h-16">
-<div className="flex items-center gap-4">
-<div className="text-blue-600 text-2xl">
-<i className="fas fa-cube"></i>
-</div>
-<h1 className="text-xl font-semibold">Recruiter Dashboard</h1>
-</div>
+{/* Header */}
+<header className="h-16 bg-white shadow-sm fixed w-full z-50 flex items-center justify-between px-6">
+<div></div>
 <div className="flex items-center gap-6">
-<div className="relative">
-<Input
-type="search"
-placeholder="Search..."
-className="w-64 pl-10 pr-4 border-gray-200"
-/>
-<i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-</div>
-<div className="flex items-center gap-4">
-<button className="relative">
+<button className="relative cursor-pointer">
 <i className="fas fa-bell text-gray-600"></i>
-<span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
+<span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span>
 </button>
-<Avatar>
-<AvatarImage src="https://public.readdy.ai/ai/img_res/5675e9694e99027cd9f4833835a7ed1c.jpg" />
-<AvatarFallback>HR</AvatarFallback>
-</Avatar>
+<div className="flex items-center gap-3 cursor-pointer">
+<div className="bg-gray-100 px-4 py-2 rounded-lg">
+<span className="font-medium text-gray-700">Admin</span>
 </div>
 </div>
 </div>
 </header>
-<div className="flex">
 {/* Sidebar */}
-<aside className="w-64 bg-white border-r border-gray-200 h-[calc(100vh-64px)] p-4">
-<nav className="space-y-2">
-<Button variant="ghost" className="w-full justify-start gap-3">
-<i className="fas fa-chart-line"></i>
-Dashboard
+<aside className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white shadow-sm transition-all overflow-hidden ${sidebarCollapsed ? 'w-20' : 'w-64'}`}>
+<ScrollArea className="h-full">
+<nav className="p-4">
+<Button
+variant="ghost"
+className="w-full justify-start mb-2 gap-3 text-gray-700 hover:text-black hover:bg-gray-100"
+onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+>
+<i className="fas fa-bars"></i>
+{!sidebarCollapsed && <span>Toggle Menu</span>}
 </Button>
-<Button variant="secondary" className="w-full justify-start gap-3">
-<i className="fas fa-building"></i>
-Recruiters
+{['Dashboard', 'Students', 'Recruiters', 'Analytics', 'Reports'].map((item) => (
+<Button
+key={item}
+variant="ghost"
+className="w-full justify-start mb-2 gap-3 text-gray-700 hover:text-black hover:bg-gray-100"
+>
+<i className={`fas fa-${item.toLowerCase() === 'dashboard' ? 'chart-line' :
+item.toLowerCase() === 'students' ? 'user-graduate' :
+item.toLowerCase() === 'recruiters' ? 'building' :
+item.toLowerCase() === 'analytics' ? 'chart-pie' :
+item.toLowerCase() === 'reports' ? 'file-alt' : ''}`}>
+</i>
+{!sidebarCollapsed && <span>{item}</span>}
 </Button>
-<Button variant="ghost" className="w-full justify-start gap-3">
-<i className="fas fa-user-graduate"></i>
-Students
-</Button>
-<Button variant="ghost" className="w-full justify-start gap-3">
-<i className="fas fa-chart-bar"></i>
-Analytics
-</Button>
-<Button variant="ghost" className="w-full justify-start gap-3">
-<i className="fas fa-briefcase"></i>
-Job Requests
-</Button>
+))}
 </nav>
+</ScrollArea>
 </aside>
 {/* Main Content */}
-<main className="flex-1 p-6">
+<main className={`pt-20 transition-all ${sidebarCollapsed ? 'ml-20' : 'ml-64'} px-6`}>
+<div className="max-w-[1440px] mx-auto">
 {/* Stats Cards */}
-<div className="grid grid-cols-4 gap-6 mb-6">
-<Card className="p-6">
+<div className="grid grid-cols-4 gap-6 mb-8">
+{[
+{ title: 'Total Students', value: '1,248', icon: 'users', color: 'bg-gray-600' },
+{ title: 'Placed Students', value: '892', icon: 'check-circle', color: 'bg-gray-700' },
+{ title: 'Average Package', value: '₹14.2 LPA', icon: 'dollar-sign', color: 'bg-gray-800' },
+{ title: 'Company Visits', value: '42', icon: 'building', color: 'bg-gray-900' }
+].map((stat) => (
+<Card key={stat.title} className="p-6">
 <div className="flex items-center justify-between">
 <div>
-<p className="text-sm text-gray-500">Total Students</p>
-<h3 className="text-2xl font-bold mt-1">545</h3>
+<p className="text-sm text-gray-500">{stat.title}</p>
+<h3 className="text-2xl font-semibold mt-1">{stat.value}</h3>
 </div>
-<div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-<i className="fas fa-users text-blue-600 text-xl"></i>
-</div>
-</div>
-</Card>
-<Card className="p-6">
-<div className="flex items-center justify-between">
-<div>
-<p className="text-sm text-gray-500">Placed Students</p>
-<h3 className="text-2xl font-bold mt-1">438</h3>
-</div>
-<div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-<i className="fas fa-check text-green-600 text-xl"></i>
+<div className={`${stat.color} w-12 h-12 rounded-full flex items-center justify-center`}>
+<i className={`fas fa-${stat.icon} text-white text-xl`}></i>
 </div>
 </div>
 </Card>
-<Card className="p-6">
-<div className="flex items-center justify-between">
-<div>
-<p className="text-sm text-gray-500">Active Recruiters</p>
-<h3 className="text-2xl font-bold mt-1">72</h3>
-</div>
-<div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-<i className="fas fa-building text-purple-600 text-xl"></i>
-</div>
-</div>
-</Card>
-<Card className="p-6">
-<div className="flex items-center justify-between">
-<div>
-<p className="text-sm text-gray-500">Pending Requests</p>
-<h3 className="text-2xl font-bold mt-1">15</h3>
-</div>
-<div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-<i className="fas fa-clock text-orange-600 text-xl"></i>
-</div>
-</div>
-</Card>
-</div>
-<div className="grid grid-cols-12 gap-6">
-{/* Charts */}
-<Card className="col-span-8 p-6">
-<div className="flex items-center justify-between mb-6">
-<h2 className="text-lg font-semibold">Recruitment Statistics</h2>
-<div className="flex gap-2">
-<Button variant="outline" size="sm">
-<i className="fas fa-download mr-2"></i>
-Export
-</Button>
-<Button variant="outline" size="sm">
-<i className="fas fa-filter mr-2"></i>
-Filter
-</Button>
-</div>
-</div>
-<div id="branch-chart" style={{ height: '400px' }}></div>
-</Card>
-<Card className="col-span-4 p-6">
-<h2 className="text-lg font-semibold mb-6">Hiring Trends</h2>
-<div id="trend-chart" style={{ height: '400px' }}></div>
-</Card>
-{/* Company List */}
-<Card className="col-span-12 p-6">
-<div className="flex items-center justify-between mb-6">
-<h2 className="text-lg font-semibold">Active Companies</h2>
-<Button className="!rounded-button">
-<i className="fas fa-plus mr-2"></i>
-Add Company
-</Button>
-</div>
-<div className="overflow-x-auto">
-<table className="w-full">
-<thead>
-<tr className="border-b border-gray-200">
-<th className="text-left py-4 px-4 font-medium text-gray-500">Company</th>
-<th className="text-left py-4 px-4 font-medium text-gray-500">Status</th>
-<th className="text-left py-4 px-4 font-medium text-gray-500">Open Positions</th>
-<th className="text-left py-4 px-4 font-medium text-gray-500">Total Hired</th>
-<th className="text-left py-4 px-4 font-medium text-gray-500">Location</th>
-<th className="text-left py-4 px-4 font-medium text-gray-500">Actions</th>
-</tr>
-</thead>
-<tbody>
-{companyData.map((company, index) => (
-<tr key={index} className="border-b border-gray-100">
-<td className="py-4 px-4">
-<div className="flex items-center gap-3">
-<img src={company.logo} alt={company.name} className="w-10 h-10 rounded-full" />
-<span className="font-medium">{company.name}</span>
-</div>
-</td>
-<td className="py-4 px-4">
-<Badge variant="success" className="bg-green-100 text-green-800">
-{company.status}
-</Badge>
-</td>
-<td className="py-4 px-4">{company.positions}</td>
-<td className="py-4 px-4">{company.hired}</td>
-<td className="py-4 px-4">{company.location}</td>
-<td className="py-4 px-4">
-<div className="flex gap-2">
-<Button variant="ghost" size="sm">
-<i className="fas fa-edit"></i>
-</Button>
-<Button variant="ghost" size="sm">
-<i className="fas fa-trash"></i>
-</Button>
-</div>
-</td>
-</tr>
 ))}
-</tbody>
-</table>
 </div>
+{/* Charts Grid */}
+<div className="grid grid-cols-2 gap-6 mb-8">
+<Card className="p-6">
+<div id="branchChart" style={{ height: '400px' }}></div>
 </Card>
+<Card className="p-6">
+<div id="salaryChart" style={{ height: '400px' }}></div>
+</Card>
+</div>
+{/* Bottom Section */}
+<div className="grid grid-cols-3 gap-6">
+<Card className="col-span-2 p-6">
+<Tabs defaultValue="upcoming">
+<TabsList className="mb-4">
+<TabsTrigger value="upcoming">Upcoming Drives</TabsTrigger>
+<TabsTrigger value="recent">Recent Placements</TabsTrigger>
+</TabsList>
+<TabsContent value="upcoming">
+<div className="space-y-4">
+{[
+{ company: 'Microsoft', role: 'Software Engineer', date: '2025-03-25', package: '45 LPA' },
+{ company: 'Goldman Sachs', role: 'Technology Analyst', date: '2025-03-28', package: '32 LPA' },
+{ company: 'Google', role: 'Product Manager', date: '2025-04-02', package: '48 LPA' }
+].map((drive) => (
+<div key={drive.company} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+<div className="flex items-center gap-4">
+<div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
+<i className="fas fa-building text-gray-600 text-xl"></i>
+</div>
+<div>
+<h4 className="font-semibold">{drive.company}</h4>
+<p className="text-sm text-gray-500">{drive.role}</p>
+</div>
+</div>
+<div className="text-right">
+<p className="font-medium">{drive.package}</p>
+<p className="text-sm text-gray-500">{drive.date}</p>
+</div>
+</div>
+))}
+</div>
+</TabsContent>
+<TabsContent value="recent">
+<div className="space-y-4">
+{[
+{ student: 'Emily Parker', company: 'Amazon', role: 'SDE', package: '42 LPA' },
+{ student: 'Michael Chen', company: 'Meta', role: 'Product Designer', package: '38 LPA' },
+{ student: 'Sarah Johnson', company: 'Apple', role: 'iOS Developer', package: '40 LPA' }
+].map((placement) => (
+<div key={placement.student} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+<div className="flex items-center gap-4">
+<Avatar className="h-12 w-12">
+<img src={`https://readdy.ai/api/search-image?query=professional headshot portrait of a young graduate student in formal attire, neutral background, studio lighting&width=100&height=100&flag=6348919efde02e73c8fcfad7c3f61bf3&seq=${placement.student}&orientation=squarish`} alt={placement.student} />
+</Avatar>
+<div>
+<h4 className="font-semibold">{placement.student}</h4>
+<p className="text-sm text-gray-500">{placement.company} - {placement.role}</p>
+</div>
+</div>
+<div className="text-right">
+<p className="font-medium">{placement.package}</p>
+<p className="text-sm text-green-500">Placed</p>
+</div>
+</div>
+))}
+</div>
+</TabsContent>
+</Tabs>
+</Card>
+<Card className="p-6">
+<div id="companyChart" style={{ height: '300px' }}></div>
+</Card>
+</div>
 </div>
 </main>
 </div>
-</div>
 );
-};
+}
 export default App
